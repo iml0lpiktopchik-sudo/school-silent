@@ -7,7 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
-requirements = python3==3.10,kivy,plyer,pyjnius @ git+https://github.com/kivy/pyjnius.git@refs/pull/753/head
+requirements = python3==3.10,kivy,plyer,pyjnius
 
 orientation = portrait
 fullscreen = 0
@@ -16,6 +16,7 @@ android.permissions = ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_NOTIF
 android.api = 33
 android.minapi = 24
 android.ndk = 21b
+p4a.branch = develop
 
 [buildozer]
 log_level = 2
