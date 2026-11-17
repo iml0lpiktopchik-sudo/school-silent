@@ -7,7 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
-requirements = python3==3.10,kivy,plyer,pyjnius @ git+https://github.com/kivy/pyjnius.git@eaf76a5#egg=pyjnius
+requirements = python3==3.9,kivy,plyer,jnius>=1.4.0
 
 orientation = portrait
 fullscreen = 0
