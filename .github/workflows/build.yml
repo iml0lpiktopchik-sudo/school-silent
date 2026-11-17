@@ -24,7 +24,7 @@ jobs:
         pip install --upgrade pip
         pip install buildozer
         pip install "cython==0.29.33"
-        pip install "jnius>=1.4.0"
+        pip install "pyjnius>=1.4.0"
 
     - name: Build with Buildozer
       run: |
