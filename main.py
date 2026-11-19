@@ -1,30 +1,45 @@
 from kivy.app import App
+from kivy.clock import Clock
 from plyer import gps
 from jnius import autoclass, cast
 from android.permissions import request_permissions, Permission
 import math
 
-# Координаты школы (замените на свои)
+# Координаты школы (ЗАМЕНИТЕ НА СВОИ)
 SCHOOL_LAT = 55.7558
 SCHOOL_LON = 37.6173
-RADIUS_METERS = 100
+RADIUS_METERS = 100  # Радиус в метрах
 
 class SchoolSilentApp(App):
     def build(self):
-        request_permissions([Permission.ACCESS_FINE_LOCATION, Permission.ACCESS_COARSE_LOCATION])
+        # Запрашиваем разрешения при запуске
+        request_permissions([
+            Permission.ACCESS_FINE_LOCATION,
+            Permission.ACCESS_COARSE_LOCATION,
+            Permission.ACCESS_BACKGROUND_LOCATION
+        ])
+        
+        # Запускаем GPS
         try:
             gps.configure(on_location=self.on_location)
-            gps.start(minTime=10000, minDistance=10)
+            gps.start(minTime=10000, minDistance=10) # Обновление каждые 10 сек
+            print("DEBUG: GPS запущен")
         except NotImplementedError:
-            print("GPS не поддерживается")
-        return None
+            print("DEBUG: GPS не поддерживается")
+        except Exception as e:
+            print(f"DEBUG: Ошибка GPS: {e}")
+
+        return None # Интерфейс не нужен
 
     def on_location(self, **kwargs):
         lat = kwargs.get('lat')
         lon = kwargs.get('lon')
         if lat is None or lon is None:
             return
+
         dist = self.haversine(lat, lon, SCHOOL_LAT, SCHOOL_LON)
+        print(f"DEBUG: Расстояние: {dist:.1f} м")
+
         if dist <= RADIUS_METERS:
             self.set_ringer_mode(True)
         else:
@@ -35,14 +50,19 @@ class SchoolSilentApp(App):
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             Context = autoclass('android.content.Context')
             AudioManager = autoclass('android.media.AudioManager')
+            
             activity = PythonActivity.mActivity
-            audio_manager = cast('android.media.AudioManager', activity.getSystemService(Context.AUDIO_SERVICE))
+            audio_manager = cast('android.media.AudioManager',
+                                 activity.getSystemService(Context.AUDIO_SERVICE))
+            
             if silent:
-                audio_manager.setRingerMode(0) # Беззвучный
+                audio_manager.setRingerMode(0) # 0 = Беззвучный
+                print("DEBUG: Включен беззвучный режим")
             else:
-                audio_manager.setRingerMode(2) # Обычный
+                audio_manager.setRingerMode(2) # 2 = Обычный
+                print("DEBUG: Восстановлен обычный режим")
         except Exception as e:
-            print(f"Ошибка: {e}")
+            print(f"DEBUG: Ошибка переключения: {e}")
 
     def haversine(self, lat1, lon1, lat2, lon2):
         R = 6371000
